@@ -7,7 +7,6 @@ require (
 	github.com/dustin/go-broadcast v0.0.0-20171205050544-f664265f5a66
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7
 	github.com/gin-gonic/autotls v0.0.0-20180426091246-be87bd5ef97b
-	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/golang/protobuf v1.2.0
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
 	github.com/json-iterator/go v1.1.5
