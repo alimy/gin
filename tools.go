@@ -18,7 +18,7 @@ import (
 	_ "github.com/gin-gonic/autotls"
 	_ "github.com/jessevdk/go-assets"
 	_ "github.com/manucorporat/stats"
-	_ "github.com/thinkerou/favicon"
+	// _ "github.com/thinkerou/favicon"
 	_ "golang.org/x/crypto/acme/autocert"
 	_ "golang.org/x/lint/golint"
 	_ "google.golang.org/grpc"
