@@ -1,6 +1,8 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/alimy/gin v0.0.0-20181223100143-8c7b9e92dddc h1:ZsBixNuEdUkDjmcI7QRvFHmB1L4fbm7l2wyJIQ7AweY=
 github.com/alimy/gin v0.0.0-20181223100143-8c7b9e92dddc/go.mod h1:qYke640h/GYwx2N17+HCj6Om+JuNDOwHU8XDCul86No=
+github.com/alimy/gin v1.4.1-0.20181223173902-dd30367d91f7 h1:fM7GxAYHAUl13mW0b0nChS2eIUwZ+1oxzfLC+EfWl70=
+github.com/alimy/gin v1.4.1-0.20181223173902-dd30367d91f7/go.mod h1:qYke640h/GYwx2N17+HCj6Om+JuNDOwHU8XDCul86No=
 github.com/campoy/embedmd v0.0.0-20171205015432-c59ce00e0296 h1:tRsilif6pbtt+PX6uRoyGd+qR+4ZPucFZLHlc3Ak6z8=
 github.com/campoy/embedmd v0.0.0-20171205015432-c59ce00e0296/go.mod h1:/dBk8ICkslPCmyRdn4azP+QvBxL6Eg3EYxUGI9xMMFw=
 github.com/client9/misspell v0.3.4 h1:ta993UF76GwbvJcIo3Y68y/M3WxlpEHPWIGDkJYwzJI=

@@ -789,7 +789,7 @@ func (c *Context) JSONP(code int, obj interface{}) {
 	factory := render.Default(render.JsonpJSONRenderFactory)
 	callback := c.DefaultQuery("callback", "")
 	if callback == "" {
-		c.Render(code, render.JSON{Data: obj})
+		c.JSON(code, obj)
 		return
 	}
 	c.Render(code, factory.Instance(obj, callback))

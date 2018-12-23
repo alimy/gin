@@ -1,6 +1,6 @@
 module github.com/alimy/gin/bundle/json
 
 require (
-	github.com/alimy/gin v0.0.0-20181223100143-8c7b9e92dddc
+	github.com/alimy/gin v1.4.1-0.20181223173902-dd30367d91f7 // indirect
 	github.com/json-iterator/go v1.1.5
 )
