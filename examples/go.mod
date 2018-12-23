@@ -1,6 +1,7 @@
 module github.com/alimy/gin/examples
 
 require (
+	github.com/alimy/gin v0.0.0-20181223100143-8c7b9e92dddc
 	github.com/dustin/go-broadcast v0.0.0-20171205050544-f664265f5a66
 	github.com/gin-gonic/autotls v0.0.0-20180426091246-be87bd5ef97b
 	github.com/golang/protobuf v1.2.0
