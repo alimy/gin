@@ -168,60 +168,60 @@ type FooStructForStringPtrType struct {
 type FooStructForMapPtrType struct {
 	PtrBar *map[string]interface{} `form:"ptr_bar"`
 }
-
-func TestBindingDefault(t *testing.T) {
-	assert.Equal(t, Form, Default("GET", ""))
-	assert.Equal(t, Form, Default("GET", MIMEJSON))
-
-	assert.Equal(t, JSON, Default("POST", MIMEJSON))
-	assert.Equal(t, JSON, Default("PUT", MIMEJSON))
-
-	assert.Equal(t, XML, Default("POST", MIMEXML))
-	assert.Equal(t, XML, Default("PUT", MIMEXML2))
-
-	assert.Equal(t, Form, Default("POST", MIMEPOSTForm))
-	assert.Equal(t, Form, Default("PUT", MIMEPOSTForm))
-
-	assert.Equal(t, Form, Default("POST", MIMEMultipartPOSTForm))
-	assert.Equal(t, Form, Default("PUT", MIMEMultipartPOSTForm))
-
-	assert.Equal(t, ProtoBuf, Default("POST", MIMEPROTOBUF))
-	assert.Equal(t, ProtoBuf, Default("PUT", MIMEPROTOBUF))
-
-	assert.Equal(t, MsgPack, Default("POST", MIMEMSGPACK))
-	assert.Equal(t, MsgPack, Default("PUT", MIMEMSGPACK2))
-
-	assert.Equal(t, YAML, Default("POST", MIMEYAML))
-	assert.Equal(t, YAML, Default("PUT", MIMEYAML))
-}
-
-func TestBindingJSONNilBody(t *testing.T) {
-	var obj FooStruct
-	req, _ := http.NewRequest(http.MethodPost, "/", nil)
-	err := JSON.Bind(req, &obj)
-	assert.Error(t, err)
-}
-
-func TestBindingJSON(t *testing.T) {
-	testBodyBinding(t,
-		JSON, "json",
-		"/", "/",
-		`{"foo": "bar"}`, `{"bar": "foo"}`)
-}
-
-func TestBindingJSONUseNumber(t *testing.T) {
-	testBodyBindingUseNumber(t,
-		JSON, "json",
-		"/", "/",
-		`{"foo": 123}`, `{"bar": "foo"}`)
-}
-
-func TestBindingJSONUseNumber2(t *testing.T) {
-	testBodyBindingUseNumber2(t,
-		JSON, "json",
-		"/", "/",
-		`{"foo": 123}`, `{"bar": "foo"}`)
-}
+//
+//func TestBindingDefault(t *testing.T) {
+//	assert.Equal(t, Form, Default("GET", ""))
+//	assert.Equal(t, Form, Default("GET", MIMEJSON))
+//
+//	assert.Equal(t, JSON, Default("POST", MIMEJSON))
+//	assert.Equal(t, JSON, Default("PUT", MIMEJSON))
+//
+//	assert.Equal(t, XML, Default("POST", MIMEXML))
+//	assert.Equal(t, XML, Default("PUT", MIMEXML2))
+//
+//	assert.Equal(t, Form, Default("POST", MIMEPOSTForm))
+//	assert.Equal(t, Form, Default("PUT", MIMEPOSTForm))
+//
+//	assert.Equal(t, Form, Default("POST", MIMEMultipartPOSTForm))
+//	assert.Equal(t, Form, Default("PUT", MIMEMultipartPOSTForm))
+//
+//	assert.Equal(t, ProtoBuf, Default("POST", MIMEPROTOBUF))
+//	assert.Equal(t, ProtoBuf, Default("PUT", MIMEPROTOBUF))
+//
+//	assert.Equal(t, MsgPack, Default("POST", MIMEMSGPACK))
+//	assert.Equal(t, MsgPack, Default("PUT", MIMEMSGPACK2))
+//
+//	assert.Equal(t, YAML, Default("POST", MIMEYAML))
+//	assert.Equal(t, YAML, Default("PUT", MIMEYAML))
+//}
+//
+//func TestBindingJSONNilBody(t *testing.T) {
+//	var obj FooStruct
+//	req, _ := http.NewRequest(http.MethodPost, "/", nil)
+//	err := JSON.Bind(req, &obj)
+//	assert.Error(t, err)
+//}
+//
+//func TestBindingJSON(t *testing.T) {
+//	testBodyBinding(t,
+//		JSON, "json",
+//		"/", "/",
+//		`{"foo": "bar"}`, `{"bar": "foo"}`)
+//}
+//
+//func TestBindingJSONUseNumber(t *testing.T) {
+//	testBodyBindingUseNumber(t,
+//		JSON, "json",
+//		"/", "/",
+//		`{"foo": 123}`, `{"bar": "foo"}`)
+//}
+//
+//func TestBindingJSONUseNumber2(t *testing.T) {
+//	testBodyBindingUseNumber2(t,
+//		JSON, "json",
+//		"/", "/",
+//		`{"foo": 123}`, `{"bar": "foo"}`)
+//}
 
 func TestBindingForm(t *testing.T) {
 	testFormBinding(t, "POST",

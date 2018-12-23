@@ -8,7 +8,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/alimy/gin/internal/json"
 	"github.com/stretchr/testify/assert"
 )
 

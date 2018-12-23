@@ -10,7 +10,7 @@ require (
 	github.com/gin-gonic/gin v1.3.0 // indirect
 	github.com/golang/protobuf v1.2.0
 	github.com/jessevdk/go-assets v0.0.0-20160921144138-4f4301a06e15
-	github.com/json-iterator/go v1.1.5
+	github.com/json-iterator/go v1.1.5 // indirect
 	github.com/manucorporat/stats v0.0.0-20180402194714-3ba42d56d227
 	github.com/mattn/go-isatty v0.0.4
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

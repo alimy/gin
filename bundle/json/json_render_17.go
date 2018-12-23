@@ -34,7 +34,7 @@ func (r *PureJSONRender) Render(w http.ResponseWriter) error {
 
 // WriteContentType (PureJSON) writes custom ContentType.
 func (*PureJSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonContentType)
+	render.WriteContentType(w, jsonContentType)
 }
 
 func (PureJsonRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {

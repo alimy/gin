@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	binding.Register(binding.MIMEPOSTForm, jsonBinding{})
+	binding.Register(binding.MIMEJSON, &jsonBinding{})
 
 	render.Register(render.JSONRenderFactory, &JSONRenderFactory{})
 	render.Register(render.IntendedJSONRenderFactory, &IndentedJSONRenderFactory{})

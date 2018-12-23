@@ -73,16 +73,16 @@ func (r *JSONRender) Render(w http.ResponseWriter) (err error) {
 
 // WriteContentType (JSON) writes JSON ContentType.
 func (*JSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonContentType)
+	render.WriteContentType(w, jsonContentType)
 }
 
 func (JSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &JSON{Data: data}
+	return &JSONRender{Data: data}
 }
 
 // WriteJSON marshals the given interface object and writes it with custom ContentType.
 func WriteJSON(w http.ResponseWriter, obj interface{}) error {
-	WriteContentType(w, jsonContentType)
+	render.WriteContentType(w, jsonContentType)
 	jsonBytes, err := json.Marshal(obj)
 	if err != nil {
 		return err
@@ -104,7 +104,7 @@ func (r *IndentedJSONRender) Render(w http.ResponseWriter) error {
 
 // WriteContentType (IndentedJSON) writes JSON ContentType.
 func (*IndentedJSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonContentType)
+	render.WriteContentType(w, jsonContentType)
 }
 
 func (IndentedJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
@@ -128,7 +128,7 @@ func (r *SecureJSONRender) Render(w http.ResponseWriter) error {
 
 // WriteContentType (SecureJSON) writes JSON ContentType.
 func (*SecureJSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonContentType)
+	render.WriteContentType(w, jsonContentType)
 }
 
 func (SecureJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
@@ -163,7 +163,7 @@ func (r *JsonpJSONRender) Render(w http.ResponseWriter) (err error) {
 
 // WriteContentType (JsonpJSON) writes Javascript ContentType.
 func (*JsonpJSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonpContentType)
+	render.WriteContentType(w, jsonpContentType)
 }
 
 func (JsonpJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
@@ -201,7 +201,7 @@ func (r *AsciiJSONRender) Render(w http.ResponseWriter) (err error) {
 
 // WriteContentType (AsciiJSON) writes JSON ContentType.
 func (*AsciiJSONRender) WriteContentType(w http.ResponseWriter) {
-	WriteContentType(w, jsonAsciiContentType)
+	render.WriteContentType(w, jsonAsciiContentType)
 }
 
 func (AsciiJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
