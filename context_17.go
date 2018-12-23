@@ -9,7 +9,7 @@ package gin
 import (
 	"time"
 
-	"github.com/gin-gonic/gin/render"
+	"github.com/alimy/gin/render"
 )
 
 // PureJSON serializes the given struct as JSON into the response body.

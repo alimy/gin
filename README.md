@@ -4,12 +4,12 @@
 
 [![Build Status](https://travis-ci.org/gin-gonic/gin.svg)](https://travis-ci.org/gin-gonic/gin)
 [![codecov](https://codecov.io/gh/gin-gonic/gin/branch/master/graph/badge.svg)](https://codecov.io/gh/gin-gonic/gin)
-[![Go Report Card](https://goreportcard.com/badge/github.com/gin-gonic/gin)](https://goreportcard.com/report/github.com/gin-gonic/gin)
-[![GoDoc](https://godoc.org/github.com/gin-gonic/gin?status.svg)](https://godoc.org/github.com/gin-gonic/gin)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alimy/gin)](https://goreportcard.com/report/github.com/alimy/gin)
+[![GoDoc](https://godoc.org/github.com/alimy/gin?status.svg)](https://godoc.org/github.com/alimy/gin)
 [![Join the chat at https://gitter.im/gin-gonic/gin](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gin-gonic/gin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Sourcegraph](https://sourcegraph.com/github.com/gin-gonic/gin/-/badge.svg)](https://sourcegraph.com/github.com/gin-gonic/gin?badge)
+[![Sourcegraph](https://sourcegraph.com/github.com/alimy/gin/-/badge.svg)](https://sourcegraph.com/github.com/alimy/gin?badge)
 [![Open Source Helpers](https://www.codetriage.com/gin-gonic/gin/badges/users.svg)](https://www.codetriage.com/gin-gonic/gin)
-[![Release](https://img.shields.io/github/release/gin-gonic/gin.svg?style=flat-square)](https://github.com/gin-gonic/gin/releases)
+[![Release](https://img.shields.io/github/release/gin-gonic/gin.svg?style=flat-square)](https://github.com/alimy/gin/releases)
 
 Gin is a web framework written in Go (Golang). It features a martini-like API with much better performance, up to 40 times faster thanks to [httprouter](https://github.com/julienschmidt/httprouter). If you need performance and good productivity, you will love Gin.
 
@@ -73,13 +73,13 @@ To install Gin package, you need to install Go and set your Go workspace first.
 1. Download and install it:
 
 ```sh
-$ go get -u github.com/gin-gonic/gin
+$ go get -u github.com/alimy/gin
 ```
 
 2. Import it in your code:
 
 ```go
-import "github.com/gin-gonic/gin"
+import "github.com/alimy/gin"
 ```
 
 3. (Optional) Import `net/http`. This is required for example if using constants such as `http.StatusOK`.
@@ -105,7 +105,7 @@ $ mkdir -p $GOPATH/src/github.com/myusername/project && cd "$_"
 
 ```sh
 $ govendor init
-$ govendor fetch github.com/gin-gonic/gin@v1.3
+$ govendor fetch github.com/alimy/gin@v1.3
 ```
 
 4. Copy a starting template inside your project
@@ -134,7 +134,7 @@ $ cat example.go
 ```go
 package main
 
-import "github.com/gin-gonic/gin"
+import "github.com/alimy/gin"
 
 func main() {
 	r := gin.Default()
@@ -362,9 +362,9 @@ ids: map[b:hello a:1234], names: map[second:tianou first:thinkerou]
 
 #### Single file
 
-References issue [#774](https://github.com/gin-gonic/gin/issues/774) and detail [example code](examples/upload-file/single).
+References issue [#774](https://github.com/alimy/gin/issues/774) and detail [example code](examples/upload-file/single).
 
-`file.Filename` **SHOULD NOT** be trusted. See [`Content-Disposition` on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition#Directives) and [#1693](https://github.com/gin-gonic/gin/issues/1693)
+`file.Filename` **SHOULD NOT** be trusted. See [`Content-Disposition` on MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition#Directives) and [#1693](https://github.com/alimy/gin/issues/1693)
 
 > The filename is always optional and must not be used blindly by the application: path information should be stripped, and conversion to the server file system rules should be done.
 
@@ -698,8 +698,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
+	"github.com/alimy/gin"
+	"github.com/alimy/gin/binding"
 	"gopkg.in/go-playground/validator.v8"
 )
 
@@ -756,7 +756,7 @@ See the [struct-lvl-validation example](examples/struct-lvl-validations) to lear
 
 ### Only Bind Query String
 
-`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/gin-gonic/gin/issues/742#issuecomment-315953017).
+`ShouldBindQuery` function only binds the query params and not the post data. See the [detail information](https://github.com/alimy/gin/issues/742#issuecomment-315953017).
 
 ```go
 package main
@@ -764,7 +764,7 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 type Person struct {
@@ -792,7 +792,7 @@ func startPage(c *gin.Context) {
 
 ### Bind Query String or Post Data
 
-See the [detail information](https://github.com/gin-gonic/gin/issues/742#issuecomment-264681292).
+See the [detail information](https://github.com/alimy/gin/issues/742#issuecomment-264681292).
 
 ```go
 package main
@@ -801,7 +801,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 type Person struct {
@@ -820,7 +820,7 @@ func startPage(c *gin.Context) {
 	var person Person
 	// If `GET`, only `Form` binding engine (`query`) used.
 	// If `POST`, first checks the `content-type` for `JSON` or `XML`, then uses `Form` (`form-data`).
-	// See more at https://github.com/gin-gonic/gin/blob/master/binding/binding.go#L48
+	// See more at https://github.com/alimy/gin/blob/master/binding/binding.go#L48
 	if c.ShouldBind(&person) == nil {
 		log.Println(person.Name)
 		log.Println(person.Address)
@@ -838,12 +838,12 @@ $ curl -X GET "localhost:8085/testing?name=appleboy&address=xyz&birthday=1992-03
 
 ### Bind Uri
 
-See the [detail information](https://github.com/gin-gonic/gin/issues/846).
+See the [detail information](https://github.com/alimy/gin/issues/846).
 
 ```go
 package main
 
-import "github.com/gin-gonic/gin"
+import "github.com/alimy/gin"
 
 type Person struct {
 	ID string `uri:"id" binding:"required,uuid"`
@@ -872,7 +872,7 @@ $ curl -v localhost:8088/thinkerou/not-uuid
 
 ### Bind HTML checkboxes
 
-See the [detail information](https://github.com/gin-gonic/gin/issues/129#issuecomment-124260092)
+See the [detail information](https://github.com/alimy/gin/issues/129#issuecomment-124260092)
 
 main.go
 
@@ -922,7 +922,7 @@ result:
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 type LoginForm struct {
@@ -1253,7 +1253,7 @@ import (
     "net/http"
     "time"
 
-    "github.com/gin-gonic/gin"
+    "github.com/alimy/gin"
 )
 
 func formatAsDate(t time.Time) string {
@@ -1470,7 +1470,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/autotls"
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 func main() {
@@ -1495,7 +1495,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/autotls"
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 	"golang.org/x/crypto/acme/autocert"
 )
 
@@ -1519,7 +1519,7 @@ func main() {
 
 ### Run multiple service using Gin
 
-See the [question](https://github.com/gin-gonic/gin/issues/346) and try the following example:
+See the [question](https://github.com/alimy/gin/issues/346) and try the following example:
 
 [embedmd]:# (examples/multiple-service/main.go go)
 ```go
@@ -1530,7 +1530,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -1604,7 +1604,7 @@ func main() {
 Do you want to graceful restart or stop your web server?
 There are some ways this can be done.
 
-We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer issue [#296](https://github.com/gin-gonic/gin/issues/296) for more details.
+We can use [fvbock/endless](https://github.com/fvbock/endless) to replace the default `ListenAndServe`. Refer issue [#296](https://github.com/alimy/gin/issues/296) for more details.
 
 ```go
 router := gin.Default()
@@ -1635,7 +1635,7 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 func main() {
@@ -1865,7 +1865,7 @@ enough to call binding at once.
 * This feature is only needed for some formats -- `JSON`, `XML`, `MsgPack`,
 `ProtoBuf`. For other formats, `Query`, `Form`, `FormPost`, `FormMultipart`,
 can be called by `c.ShouldBind()` multiple times without any damage to
-performance (See [#1341](https://github.com/gin-gonic/gin/pull/1341)).
+performance (See [#1341](https://github.com/alimy/gin/pull/1341)).
 
 ### http2 server push
 
@@ -1879,7 +1879,7 @@ import (
 	"html/template"
 	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 var html = template.Must(template.New("https").Parse(`
@@ -1932,7 +1932,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/alimy/gin"
 )
 
 func main() {
@@ -1964,7 +1964,7 @@ func main() {
 import (
     "fmt"
 
-    "github.com/gin-gonic/gin"
+    "github.com/alimy/gin"
 )
 
 func main() {
@@ -2036,7 +2036,7 @@ func TestPingRoute(t *testing.T) {
 
 ## Users
 
-Awesome project lists using [Gin](https://github.com/gin-gonic/gin) web framework.
+Awesome project lists using [Gin](https://github.com/alimy/gin) web framework.
 
 * [drone](https://github.com/drone/drone): Drone is a Continuous Delivery platform built on Docker, written in Go.
 * [gorush](https://github.com/appleboy/gorush): A push notification server written in Go.

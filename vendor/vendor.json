@@ -85,5 +85,5 @@
 			"versionExact": "v2.2.1"
 		}
 	],
-	"rootPath": "github.com/gin-gonic/gin"
+	"rootPath": "github.com/alimy/gin"
 }

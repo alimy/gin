@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/gin-gonic/gin/internal/json"
+	"github.com/alimy/gin/internal/json"
 )
 
 // ErrorType is an unsigned 64-bit error code as defined in the gin spec.
