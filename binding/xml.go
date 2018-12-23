@@ -29,5 +29,5 @@ func decodeXML(r io.Reader, obj interface{}) error {
 	if err := decoder.Decode(obj); err != nil {
 		return err
 	}
-	return validate(obj)
+	return ValidateWith(obj)
 }

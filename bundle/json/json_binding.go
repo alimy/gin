@@ -2,21 +2,17 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package binding
+package json
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/alimy/gin/binding"
 	"io"
 	"net/http"
 
-	"github.com/alimy/gin/internal/json"
+	"github.com/alimy/gin/bundle/json/internal/json"
 )
-
-// EnableDecoderUseNumber is used to call the UseNumber method on the JSON
-// Decoder instance. UseNumber causes the Decoder to unmarshal a number into an
-// interface{} as a Number instead of as a float64.
-var EnableDecoderUseNumber = false
 
 type jsonBinding struct{}
 
@@ -43,5 +39,5 @@ func decodeJSON(r io.Reader, obj interface{}) error {
 	if err := decoder.Decode(obj); err != nil {
 		return err
 	}
-	return validate(obj)
+	return binding.ValidateWith(obj)
 }

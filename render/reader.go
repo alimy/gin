@@ -29,7 +29,7 @@ func (r Reader) Render(w http.ResponseWriter) (err error) {
 
 // WriteContentType (Reader) writes custom ContentType.
 func (r Reader) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, []string{r.ContentType})
+	WriteContentType(w, []string{r.ContentType})
 }
 
 // writeHeaders writes custom Header.

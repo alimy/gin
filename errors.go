@@ -8,8 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-
-	"github.com/alimy/gin/internal/json"
 )
 
 // ErrorType is an unsigned 64-bit error code as defined in the gin spec.
@@ -76,9 +74,9 @@ func (msg *Error) JSON() interface{} {
 }
 
 // MarshalJSON implements the json.Marshaller interface.
-func (msg *Error) MarshalJSON() ([]byte, error) {
-	return json.Marshal(msg.JSON())
-}
+//func (msg *Error) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(msg.JSON())
+//}
 
 // Error implements the error interface.
 func (msg Error) Error() string {
@@ -150,9 +148,9 @@ func (a errorMsgs) JSON() interface{} {
 }
 
 // MarshalJSON implements the json.Marshaller interface.
-func (a errorMsgs) MarshalJSON() ([]byte, error) {
-	return json.Marshal(a.JSON())
-}
+//func (a errorMsgs) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(a.JSON())
+//}
 
 func (a errorMsgs) String() string {
 	if len(a) == 0 {

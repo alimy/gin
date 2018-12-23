@@ -29,8 +29,8 @@ func (protobufBinding) BindBody(body []byte, obj interface{}) error {
 	if err := proto.Unmarshal(body, obj.(proto.Message)); err != nil {
 		return err
 	}
-	// Here it's same to return validate(obj), but util now we can't add
+	// Here it's same to return ValidateWith(obj), but util now we can't add
 	// `binding:""` to the struct which automatically generate by gen-proto
 	return nil
-	// return validate(obj)
+	// return ValidateWith(obj)
 }

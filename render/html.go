@@ -88,5 +88,5 @@ func (r HTML) Render(w http.ResponseWriter) error {
 
 // WriteContentType (HTML) writes HTML ContentType.
 func (r HTML) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, htmlContentType)
+	WriteContentType(w, htmlContentType)
 }

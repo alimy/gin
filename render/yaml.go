@@ -32,5 +32,5 @@ func (r YAML) Render(w http.ResponseWriter) error {
 
 // WriteContentType (YAML) writes YAML ContentType for response.
 func (r YAML) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, yamlContentType)
+	WriteContentType(w, yamlContentType)
 }

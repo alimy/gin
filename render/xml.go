@@ -24,5 +24,5 @@ func (r XML) Render(w http.ResponseWriter) error {
 
 // WriteContentType (XML) writes XML ContentType for response.
 func (r XML) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, xmlContentType)
+	WriteContentType(w, xmlContentType)
 }

@@ -26,12 +26,12 @@ func (r String) Render(w http.ResponseWriter) error {
 
 // WriteContentType (String) writes Plain ContentType.
 func (r String) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, plainContentType)
+	WriteContentType(w, plainContentType)
 }
 
 // WriteString writes data according to its format and write custom ContentType.
 func WriteString(w http.ResponseWriter, format string, data []interface{}) {
-	writeContentType(w, plainContentType)
+	WriteContentType(w, plainContentType)
 	if len(data) > 0 {
 		fmt.Fprintf(w, format, data...)
 		return

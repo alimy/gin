@@ -21,5 +21,5 @@ func (r Data) Render(w http.ResponseWriter) (err error) {
 
 // WriteContentType (Data) writes custom ContentType.
 func (r Data) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, []string{r.ContentType})
+	WriteContentType(w, []string{r.ContentType})
 }

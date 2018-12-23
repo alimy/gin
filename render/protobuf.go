@@ -32,5 +32,5 @@ func (r ProtoBuf) Render(w http.ResponseWriter) error {
 
 // WriteContentType (ProtoBuf) writes ProtoBuf ContentType.
 func (r ProtoBuf) WriteContentType(w http.ResponseWriter) {
-	writeContentType(w, protobufContentType)
+	WriteContentType(w, protobufContentType)
 }
