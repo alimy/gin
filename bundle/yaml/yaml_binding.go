@@ -2,10 +2,11 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package binding
+package yaml
 
 import (
 	"bytes"
+	"github.com/alimy/gin/binding"
 	"io"
 	"net/http"
 
@@ -31,5 +32,5 @@ func decodeYAML(r io.Reader, obj interface{}) error {
 	if err := decoder.Decode(obj); err != nil {
 		return err
 	}
-	return ValidateWith(obj)
+	return binding.ValidateWith(obj)
 }

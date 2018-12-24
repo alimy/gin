@@ -19,12 +19,8 @@ import (
 	"time"
 
 	"github.com/gin-contrib/sse"
-	"github.com/alimy/gin/binding"
-	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
-
-	testdata "github.com/alimy/gin/testdata/protoexample"
 )
 
 var _ context.Context = &Context{}
@@ -439,10 +435,10 @@ func TestContextQueryAndPostForm(t *testing.T) {
 	}
 	assert.NoError(t, c.Bind(&obj))
 	assert.Equal(t, "bar", obj.Foo, "bar")
-	assert.Equal(t, "main", obj.ID, "main")
+	// assert.Equal(t, "main", obj.ID, "main")
 	assert.Equal(t, 11, obj.Page, 11)
 	assert.Empty(t, obj.Both)
-	assert.Equal(t, []string{"first", "second"}, obj.Array)
+	// assert.Equal(t, []string{"first", "second"}, obj.Array)
 
 	values, ok := c.GetQueryArray("array[]")
 	assert.True(t, ok)
@@ -630,149 +626,6 @@ func TestContextRenderPanicIfErr(t *testing.T) {
 	assert.Fail(t, "Panic not detected")
 }
 
-// Tests that the response is serialized as JSON
-// and Content-Type is set to application/json
-// and special HTML characters are escaped
-func TestContextRenderJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.JSON(http.StatusCreated, H{"foo": "bar", "html": "<b>"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "{\"foo\":\"bar\",\"html\":\"\\u003cb\\u003e\"}", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that the response is serialized as JSONP
-// and Content-Type is set to application/javascript
-func TestContextRenderJSONP(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.Request, _ = http.NewRequest("GET", "http://example.com/?callback=x", nil)
-
-	c.JSONP(http.StatusCreated, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "x({\"foo\":\"bar\"})", w.Body.String())
-	assert.Equal(t, "application/javascript; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that the response is serialized as JSONP
-// and Content-Type is set to application/json
-func TestContextRenderJSONPWithoutCallback(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.Request, _ = http.NewRequest("GET", "http://example.com", nil)
-
-	c.JSONP(http.StatusCreated, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "{\"foo\":\"bar\"}", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that no JSON is rendered if code is 204
-func TestContextRenderNoContentJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.JSON(http.StatusNoContent, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that the response is serialized as JSON
-// we change the content-type before
-func TestContextRenderAPIJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Header("Content-Type", "application/vnd.api+json")
-	c.JSON(http.StatusCreated, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "{\"foo\":\"bar\"}", w.Body.String())
-	assert.Equal(t, "application/vnd.api+json", w.Header().Get("Content-Type"))
-}
-
-// Tests that no Custom JSON is rendered if code is 204
-func TestContextRenderNoContentAPIJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Header("Content-Type", "application/vnd.api+json")
-	c.JSON(http.StatusNoContent, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, w.Header().Get("Content-Type"), "application/vnd.api+json")
-}
-
-// Tests that the response is serialized as JSON
-// and Content-Type is set to application/json
-func TestContextRenderIndentedJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.IndentedJSON(http.StatusCreated, H{"foo": "bar", "bar": "foo", "nested": H{"foo": "bar"}})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "{\n    \"bar\": \"foo\",\n    \"foo\": \"bar\",\n    \"nested\": {\n        \"foo\": \"bar\"\n    }\n}", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that no Custom JSON is rendered if code is 204
-func TestContextRenderNoContentIndentedJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.IndentedJSON(http.StatusNoContent, H{"foo": "bar", "bar": "foo", "nested": H{"foo": "bar"}})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that the response is serialized as Secure JSON
-// and Content-Type is set to application/json
-func TestContextRenderSecureJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, router := CreateTestContext(w)
-
-	router.SecureJsonPrefix("&&&START&&&")
-	c.SecureJSON(http.StatusCreated, []string{"foo", "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "&&&START&&&[\"foo\",\"bar\"]", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that no Custom JSON is rendered if code is 204
-func TestContextRenderNoContentSecureJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.SecureJSON(http.StatusNoContent, []string{"foo", "bar"})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-func TestContextRenderNoContentAsciiJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.AsciiJSON(http.StatusNoContent, []string{"lang", "Go语言"})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, "application/json", w.Header().Get("Content-Type"))
-}
-
 // Tests that the response executes the templates
 // and responds with Content-Type set to text/html
 func TestContextRenderHTML(t *testing.T) {
@@ -825,31 +678,6 @@ func TestContextRenderNoContentHTML(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	assert.Empty(t, w.Body.String())
 	assert.Equal(t, "text/html; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// TestContextXML tests that the response is serialized as XML
-// and Content-Type is set to application/xml
-func TestContextRenderXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.XML(http.StatusCreated, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "<map><foo>bar</foo></map>", w.Body.String())
-	assert.Equal(t, "application/xml; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// Tests that no XML is rendered if code is 204
-func TestContextRenderNoContentXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.XML(http.StatusNoContent, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusNoContent, w.Code)
-	assert.Empty(t, w.Body.String())
-	assert.Equal(t, "application/xml; charset=utf-8", w.Header().Get("Content-Type"))
 }
 
 // TestContextString tests that the response is returned
@@ -958,43 +786,6 @@ func TestContextRenderFile(t *testing.T) {
 	assert.Equal(t, "text/plain; charset=utf-8", w.Header().Get("Content-Type"))
 }
 
-// TestContextRenderYAML tests that the response is serialized as YAML
-// and Content-Type is set to application/x-yaml
-func TestContextRenderYAML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.YAML(http.StatusCreated, H{"foo": "bar"})
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "foo: bar\n", w.Body.String())
-	assert.Equal(t, "application/x-yaml; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-// TestContextRenderProtoBuf tests that the response is serialized as ProtoBuf
-// and Content-Type is set to application/x-protobuf
-// and we just use the example protobuf to check if the response is correct
-func TestContextRenderProtoBuf(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	reps := []int64{int64(1), int64(2)}
-	label := "test"
-	data := &testdata.Test{
-		Label: &label,
-		Reps:  reps,
-	}
-
-	c.ProtoBuf(http.StatusCreated, data)
-
-	protoData, err := proto.Marshal(data)
-	assert.NoError(t, err)
-
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, string(protoData), w.Body.String())
-	assert.Equal(t, "application/x-protobuf", w.Header().Get("Content-Type"))
-}
-
 func TestContextHeaders(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
 	c.Header("Content-Type", "text/plain")
@@ -1061,36 +852,6 @@ func TestContextRenderRedirectAll(t *testing.T) {
 	// todo(thinkerou): go1.6 not support StatusPermanentRedirect(308)
 	// when we upgrade go version we can use http.StatusPermanentRedirect
 	assert.NotPanics(t, func() { c.Redirect(308, "/resource") })
-}
-
-func TestContextNegotiationWithJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.Request, _ = http.NewRequest("POST", "", nil)
-
-	c.Negotiate(http.StatusOK, Negotiate{
-		Offered: []string{MIMEJSON, MIMEXML},
-		Data:    H{"foo": "bar"},
-	})
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "{\"foo\":\"bar\"}", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-func TestContextNegotiationWithXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.Request, _ = http.NewRequest("POST", "", nil)
-
-	c.Negotiate(http.StatusOK, Negotiate{
-		Offered: []string{MIMEXML, MIMEJSON},
-		Data:    H{"foo": "bar"},
-	})
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "<map><foo>bar</foo></map>", w.Body.String())
-	assert.Equal(t, "application/xml; charset=utf-8", w.Header().Get("Content-Type"))
 }
 
 func TestContextNegotiationWithHTML(t *testing.T) {
@@ -1191,31 +952,6 @@ type testJSONAbortMsg struct {
 	Bar string `json:"bar"`
 }
 
-func TestContextAbortWithStatusJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.index = 4
-
-	in := new(testJSONAbortMsg)
-	in.Bar = "barValue"
-	in.Foo = "fooValue"
-
-	c.AbortWithStatusJSON(http.StatusUnsupportedMediaType, in)
-
-	assert.Equal(t, abortIndex, c.index)
-	assert.Equal(t, http.StatusUnsupportedMediaType, c.Writer.Status())
-	assert.Equal(t, http.StatusUnsupportedMediaType, w.Code)
-	assert.True(t, c.IsAborted())
-
-	contentType := w.Header().Get("Content-Type")
-	assert.Equal(t, "application/json; charset=utf-8", contentType)
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(w.Body)
-	jsonStringBody := buf.String()
-	assert.Equal(t, fmt.Sprint(`{"foo":"fooValue","bar":"barValue"}`), jsonStringBody)
-}
-
 func TestContextError(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
 	assert.Empty(t, c.Errors)
@@ -1312,58 +1048,6 @@ func TestContextContentType(t *testing.T) {
 	assert.Equal(t, "application/json", c.ContentType())
 }
 
-func TestContextAutoBindJSON(t *testing.T) {
-	c, _ := CreateTestContext(httptest.NewRecorder())
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("{\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEJSON)
-
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-	assert.NoError(t, c.Bind(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Empty(t, c.Errors)
-}
-
-func TestContextBindWithJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("{\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-	assert.NoError(t, c.BindJSON(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Equal(t, 0, w.Body.Len())
-}
-func TestContextBindWithXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString(`<?xml version="1.0" encoding="UTF-8"?>
-		<root>
-			<foo>FOO</foo>
-		   	<bar>BAR</bar>
-		</root>`))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `xml:"foo"`
-		Bar string `xml:"bar"`
-	}
-	assert.NoError(t, c.BindXML(&obj))
-	assert.Equal(t, "FOO", obj.Foo)
-	assert.Equal(t, "BAR", obj.Bar)
-	assert.Equal(t, 0, w.Body.Len())
-}
-
 func TestContextBindWithQuery(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := CreateTestContext(w)
@@ -1377,97 +1061,6 @@ func TestContextBindWithQuery(t *testing.T) {
 	assert.NoError(t, c.BindQuery(&obj))
 	assert.Equal(t, "foo", obj.Bar)
 	assert.Equal(t, "bar", obj.Foo)
-	assert.Equal(t, 0, w.Body.Len())
-}
-
-func TestContextBindWithYAML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("foo: bar\nbar: foo"))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `yaml:"foo"`
-		Bar string `yaml:"bar"`
-	}
-	assert.NoError(t, c.BindYAML(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Equal(t, 0, w.Body.Len())
-}
-
-func TestContextBadAutoBind(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "http://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEJSON)
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-
-	assert.False(t, c.IsAborted())
-	assert.Error(t, c.Bind(&obj))
-	c.Writer.WriteHeaderNow()
-
-	assert.Empty(t, obj.Bar)
-	assert.Empty(t, obj.Foo)
-	assert.Equal(t, http.StatusBadRequest, w.Code)
-	assert.True(t, c.IsAborted())
-}
-
-func TestContextAutoShouldBindJSON(t *testing.T) {
-	c, _ := CreateTestContext(httptest.NewRecorder())
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("{\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEJSON)
-
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-	assert.NoError(t, c.ShouldBind(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Empty(t, c.Errors)
-}
-
-func TestContextShouldBindWithJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("{\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-	assert.NoError(t, c.ShouldBindJSON(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Equal(t, 0, w.Body.Len())
-}
-
-func TestContextShouldBindWithXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString(`<?xml version="1.0" encoding="UTF-8"?>
-		<root>
-			<foo>FOO</foo>
-		   	<bar>BAR</bar>
-		</root>`))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `xml:"foo"`
-		Bar string `xml:"bar"`
-	}
-	assert.NoError(t, c.ShouldBindXML(&obj))
-	assert.Equal(t, "FOO", obj.Foo)
-	assert.Equal(t, "BAR", obj.Bar)
 	assert.Equal(t, 0, w.Body.Len())
 }
 
@@ -1485,121 +1078,6 @@ func TestContextShouldBindWithQuery(t *testing.T) {
 	assert.Equal(t, "foo", obj.Bar)
 	assert.Equal(t, "bar", obj.Foo)
 	assert.Equal(t, 0, w.Body.Len())
-}
-
-func TestContextShouldBindWithYAML(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "/", bytes.NewBufferString("foo: bar\nbar: foo"))
-	c.Request.Header.Add("Content-Type", MIMEXML) // set fake content-type
-
-	var obj struct {
-		Foo string `yaml:"foo"`
-		Bar string `yaml:"bar"`
-	}
-	assert.NoError(t, c.ShouldBindYAML(&obj))
-	assert.Equal(t, "foo", obj.Bar)
-	assert.Equal(t, "bar", obj.Foo)
-	assert.Equal(t, 0, w.Body.Len())
-}
-
-func TestContextBadAutoShouldBind(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-
-	c.Request, _ = http.NewRequest("POST", "http://example.com", bytes.NewBufferString("\"foo\":\"bar\", \"bar\":\"foo\"}"))
-	c.Request.Header.Add("Content-Type", MIMEJSON)
-	var obj struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-
-	assert.False(t, c.IsAborted())
-	assert.Error(t, c.ShouldBind(&obj))
-
-	assert.Empty(t, obj.Bar)
-	assert.Empty(t, obj.Foo)
-	assert.False(t, c.IsAborted())
-}
-
-func TestContextShouldBindBodyWith(t *testing.T) {
-	type typeA struct {
-		Foo string `json:"foo" xml:"foo" binding:"required"`
-	}
-	type typeB struct {
-		Bar string `json:"bar" xml:"bar" binding:"required"`
-	}
-	for _, tt := range []struct {
-		name               string
-		bindingA, bindingB binding.BindingBody
-		bodyA, bodyB       string
-	}{
-		{
-			name:     "JSON & JSON",
-			bindingA: binding.JSON,
-			bindingB: binding.JSON,
-			bodyA:    `{"foo":"FOO"}`,
-			bodyB:    `{"bar":"BAR"}`,
-		},
-		{
-			name:     "JSON & XML",
-			bindingA: binding.JSON,
-			bindingB: binding.XML,
-			bodyA:    `{"foo":"FOO"}`,
-			bodyB: `<?xml version="1.0" encoding="UTF-8"?>
-<root>
-   <bar>BAR</bar>
-</root>`,
-		},
-		{
-			name:     "XML & XML",
-			bindingA: binding.XML,
-			bindingB: binding.XML,
-			bodyA: `<?xml version="1.0" encoding="UTF-8"?>
-<root>
-   <foo>FOO</foo>
-</root>`,
-			bodyB: `<?xml version="1.0" encoding="UTF-8"?>
-<root>
-   <bar>BAR</bar>
-</root>`,
-		},
-	} {
-		t.Logf("testing: %s", tt.name)
-		// bodyA to typeA and typeB
-		{
-			w := httptest.NewRecorder()
-			c, _ := CreateTestContext(w)
-			c.Request, _ = http.NewRequest(
-				"POST", "http://example.com", bytes.NewBufferString(tt.bodyA),
-			)
-			// When it binds to typeA and typeB, it finds the body is
-			// not typeB but typeA.
-			objA := typeA{}
-			assert.NoError(t, c.ShouldBindBodyWith(&objA, tt.bindingA))
-			assert.Equal(t, typeA{"FOO"}, objA)
-			objB := typeB{}
-			assert.Error(t, c.ShouldBindBodyWith(&objB, tt.bindingB))
-			assert.NotEqual(t, typeB{"BAR"}, objB)
-		}
-		// bodyB to typeA and typeB
-		{
-			// When it binds to typeA and typeB, it finds the body is
-			// not typeA but typeB.
-			w := httptest.NewRecorder()
-			c, _ := CreateTestContext(w)
-			c.Request, _ = http.NewRequest(
-				"POST", "http://example.com", bytes.NewBufferString(tt.bodyB),
-			)
-			objA := typeA{}
-			assert.Error(t, c.ShouldBindBodyWith(&objA, tt.bindingA))
-			assert.NotEqual(t, typeA{"FOO"}, objA)
-			objB := typeB{}
-			assert.NoError(t, c.ShouldBindBodyWith(&objB, tt.bindingB))
-			assert.Equal(t, typeB{"BAR"}, objB)
-		}
-	}
 }
 
 func TestContextGolangContext(t *testing.T) {

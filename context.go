@@ -812,17 +812,20 @@ func (c *Context) AsciiJSON(code int, obj interface{}) {
 // XML serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj interface{}) {
-	c.Render(code, render.XML{Data: obj})
+	factory := render.Default(render.XMLRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // YAML serializes the given struct as YAML into the response body.
 func (c *Context) YAML(code int, obj interface{}) {
-	c.Render(code, render.YAML{Data: obj})
+	factory := render.Default(render.YAMLRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // ProtoBuf serializes the given struct as ProtoBuf into the response body.
 func (c *Context) ProtoBuf(code int, obj interface{}) {
-	c.Render(code, render.ProtoBuf{Data: obj})
+	factory := render.Default(render.ProtoBufRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // String writes the given string into the response body.

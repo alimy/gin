@@ -359,24 +359,6 @@ func githubConfigRouter(router *Engine) {
 	}
 }
 
-func TestGithubAPI(t *testing.T) {
-	DefaultWriter = os.Stdout
-	router := Default()
-	githubConfigRouter(router)
-
-	for _, route := range githubAPI {
-		path, values := exampleFromPath(route.path)
-		w := performRequest(router, route.method, path)
-
-		// TEST
-		assert.Contains(t, w.Body.String(), "\"status\":\"good\"")
-		for _, value := range values {
-			str := fmt.Sprintf("\"%s\":\"%s\"", value.Key, value.Value)
-			assert.Contains(t, w.Body.String(), str)
-		}
-	}
-}
-
 func exampleFromPath(path string) (string, Params) {
 	output := new(bytes.Buffer)
 	params := make(Params, 0, 6)

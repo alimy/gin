@@ -6,7 +6,6 @@ package gin
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -274,32 +273,32 @@ func TestColorForStatus(t *testing.T) {
 	assert.Equal(t, string([]byte{27, 91, 57, 55, 59, 52, 49, 109}), colorForStatus(2), "other things should be red")
 }
 
-func TestErrorLogger(t *testing.T) {
-	router := New()
-	router.Use(ErrorLogger())
-	router.GET("/error", func(c *Context) {
-		c.Error(errors.New("this is an error"))
-	})
-	router.GET("/abort", func(c *Context) {
-		c.AbortWithError(http.StatusUnauthorized, errors.New("no authorized"))
-	})
-	router.GET("/print", func(c *Context) {
-		c.Error(errors.New("this is an error"))
-		c.String(http.StatusInternalServerError, "hola!")
-	})
-
-	w := performRequest(router, "GET", "/error")
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.Equal(t, "{\"error\":\"this is an error\"}", w.Body.String())
-
-	w = performRequest(router, "GET", "/abort")
-	assert.Equal(t, http.StatusUnauthorized, w.Code)
-	assert.Equal(t, "{\"error\":\"no authorized\"}", w.Body.String())
-
-	w = performRequest(router, "GET", "/print")
-	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.Equal(t, "hola!{\"error\":\"this is an error\"}", w.Body.String())
-}
+//func TestErrorLogger(t *testing.T) {
+//	router := New()
+//	router.Use(ErrorLogger())
+//	router.GET("/error", func(c *Context) {
+//		c.Error(errors.New("this is an error"))
+//	})
+//	router.GET("/abort", func(c *Context) {
+//		c.AbortWithError(http.StatusUnauthorized, errors.New("no authorized"))
+//	})
+//	router.GET("/print", func(c *Context) {
+//		c.Error(errors.New("this is an error"))
+//		c.String(http.StatusInternalServerError, "hola!")
+//	})
+//
+//	w := performRequest(router, "GET", "/error")
+//	assert.Equal(t, http.StatusOK, w.Code)
+//	assert.Equal(t, "{\"error\":\"this is an error\"}", w.Body.String())
+//
+//	w = performRequest(router, "GET", "/abort")
+//	assert.Equal(t, http.StatusUnauthorized, w.Code)
+//	assert.Equal(t, "{\"error\":\"no authorized\"}", w.Body.String())
+//
+//	w = performRequest(router, "GET", "/print")
+//	assert.Equal(t, http.StatusInternalServerError, w.Code)
+//	assert.Equal(t, "hola!{\"error\":\"this is an error\"}", w.Body.String())
+//}
 
 func TestLoggerWithWriterSkippingPaths(t *testing.T) {
 	buffer := new(bytes.Buffer)

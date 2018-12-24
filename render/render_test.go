@@ -5,9 +5,6 @@
 package render
 
 import (
-	"bytes"
-	"encoding/xml"
-	"errors"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -15,138 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/stretchr/testify/assert"
-	"github.com/ugorji/go/codec"
-
-	testdata "github.com/alimy/gin/testdata/protoexample"
 )
-
-// TODO unit tests
-// test errors
-
-func TestRenderMsgPack(t *testing.T) {
-	w := httptest.NewRecorder()
-	data := map[string]interface{}{
-		"foo": "bar",
-	}
-
-	(MsgPack{data}).WriteContentType(w)
-	assert.Equal(t, "application/msgpack; charset=utf-8", w.Header().Get("Content-Type"))
-
-	err := (MsgPack{data}).Render(w)
-
-	assert.NoError(t, err)
-
-	h := new(codec.MsgpackHandle)
-	assert.NotNil(t, h)
-	buf := bytes.NewBuffer([]byte{})
-	assert.NotNil(t, buf)
-	err = codec.NewEncoder(buf, h).Encode(data)
-
-	assert.NoError(t, err)
-	assert.Equal(t, w.Body.String(), string(buf.Bytes()))
-	assert.Equal(t, "application/msgpack; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-type xmlmap map[string]interface{}
-
-// Allows type H to be used with xml.Marshal
-func (h xmlmap) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
-	start.Name = xml.Name{
-		Space: "",
-		Local: "map",
-	}
-	if err := e.EncodeToken(start); err != nil {
-		return err
-	}
-	for key, value := range h {
-		elem := xml.StartElement{
-			Name: xml.Name{Space: "", Local: key},
-			Attr: []xml.Attr{},
-		}
-		if err := e.EncodeElement(value, elem); err != nil {
-			return err
-		}
-	}
-
-	return e.EncodeToken(xml.EndElement{Name: start.Name})
-}
-
-func TestRenderYAML(t *testing.T) {
-	w := httptest.NewRecorder()
-	data := `
-a : Easy!
-b:
-	c: 2
-	d: [3, 4]
-	`
-	(YAML{data}).WriteContentType(w)
-	assert.Equal(t, "application/x-yaml; charset=utf-8", w.Header().Get("Content-Type"))
-
-	err := (YAML{data}).Render(w)
-	assert.NoError(t, err)
-	assert.Equal(t, "\"\\na : Easy!\\nb:\\n\\tc: 2\\n\\td: [3, 4]\\n\\t\"\n", w.Body.String())
-	assert.Equal(t, "application/x-yaml; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
-type fail struct{}
-
-// Hook MarshalYAML
-func (ft *fail) MarshalYAML() (interface{}, error) {
-	return nil, errors.New("fail")
-}
-
-func TestRenderYAMLFail(t *testing.T) {
-	w := httptest.NewRecorder()
-	err := (YAML{&fail{}}).Render(w)
-	assert.Error(t, err)
-}
-
-// test Protobuf rendering
-func TestRenderProtoBuf(t *testing.T) {
-	w := httptest.NewRecorder()
-	reps := []int64{int64(1), int64(2)}
-	label := "test"
-	data := &testdata.Test{
-		Label: &label,
-		Reps:  reps,
-	}
-
-	(ProtoBuf{data}).WriteContentType(w)
-	protoData, err := proto.Marshal(data)
-	assert.NoError(t, err)
-	assert.Equal(t, "application/x-protobuf", w.Header().Get("Content-Type"))
-
-	err = (ProtoBuf{data}).Render(w)
-
-	assert.NoError(t, err)
-	assert.Equal(t, string(protoData), w.Body.String())
-	assert.Equal(t, "application/x-protobuf", w.Header().Get("Content-Type"))
-}
-
-func TestRenderProtoBufFail(t *testing.T) {
-	w := httptest.NewRecorder()
-	data := &testdata.Test{}
-	err := (ProtoBuf{data}).Render(w)
-	assert.Error(t, err)
-}
-
-func TestRenderXML(t *testing.T) {
-	w := httptest.NewRecorder()
-	data := xmlmap{
-		"foo": "bar",
-	}
-
-	(XML{data}).WriteContentType(w)
-	assert.Equal(t, "application/xml; charset=utf-8", w.Header().Get("Content-Type"))
-
-	err := (XML{data}).Render(w)
-
-	assert.NoError(t, err)
-	assert.Equal(t, "<map><foo>bar</foo></map>", w.Body.String())
-	assert.Equal(t, "application/xml; charset=utf-8", w.Header().Get("Content-Type"))
-}
 
 func TestRenderRedirect(t *testing.T) {
 	req, err := http.NewRequest("GET", "/test-redirect", nil)
