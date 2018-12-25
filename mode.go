@@ -71,12 +71,6 @@ func DisableBindValidation() {
 	binding.Validator = nil
 }
 
-// EnableJsonDecoderUseNumber sets true for binding.EnableDecoderUseNumberto to
-// call the UseNumber method on the JSON Decoder instance.
-func EnableJsonDecoderUseNumber() {
-	binding.EnableDecoderUseNumber = true
-}
-
 // Mode returns currently gin mode.
 func Mode() string {
 	return modeName

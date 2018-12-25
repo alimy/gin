@@ -4,7 +4,10 @@
 
 package binding
 
-import "net/http"
+import (
+	"net/http"
+	"sync"
+)
 
 // Content-Type MIME of the most common data formats.
 const (
@@ -68,42 +71,70 @@ var Validator StructValidator = &defaultValidator{}
 // These implement the Binding interface and can be used to bind the data
 // present in the request to struct instances.
 var (
-	JSON          = jsonBinding{}
-	XML           = xmlBinding{}
 	Form          = formBinding{}
 	Query         = queryBinding{}
 	FormPost      = formPostBinding{}
 	FormMultipart = formMultipartBinding{}
-	ProtoBuf      = protobufBinding{}
-	MsgPack       = msgpackBinding{}
-	YAML          = yamlBinding{}
 	Uri           = uriBinding{}
+
+	bindingsMu sync.RWMutex
+	bindings   = make(map[string]Binding)
 )
 
-// Default returns the appropriate Binding instance based on the HTTP method
-// and the content type.
-func Default(method, contentType string) Binding {
-	if method == "GET" {
-		return Form
+func init() {
+	Register(MIMEPOSTForm, formPostBinding{})
+	Register(MIMEMultipartPOSTForm, formMultipartBinding{})
+}
+
+// Register makes a binding available by the provided name.
+// If Register is called twice with the same name or if binding is nil,
+// it panics.
+func Register(contentType string, binding Binding) {
+	bindingsMu.Lock()
+	defer bindingsMu.Unlock()
+
+	if binding == nil {
+		panic("gin: Register binding is nil")
+	}
+	if _, dup := bindings[contentType]; dup {
+		panic("gin: Register called twice for binding " + contentType)
 	}
 
+	bindings[contentType] = binding
 	switch contentType {
-	case MIMEJSON:
-		return JSON
-	case MIMEXML, MIMEXML2:
-		return XML
-	case MIMEPROTOBUF:
-		return ProtoBuf
-	case MIMEMSGPACK, MIMEMSGPACK2:
-		return MsgPack
-	case MIMEYAML:
-		return YAML
-	default: //case MIMEPOSTForm, MIMEMultipartPOSTForm:
+	case MIMEXML:
+		bindings[MIMEXML2] = binding
+	case MIMEXML2:
+		bindings[MIMEXML] = binding
+	case MIMEMSGPACK:
+		bindings[MIMEMSGPACK2] = binding
+	case MIMEMSGPACK2:
+		bindings[MIMEMSGPACK] = binding
+	}
+}
+
+// Default returns the appropriate Binding instance based on the content type.
+func Default(contentType string) Binding {
+	bindingsMu.RLock()
+	defer bindingsMu.RUnlock()
+
+	if binding, ok := bindings[contentType]; ok {
+		return binding
+	} else {
 		return Form
 	}
 }
 
-func validate(obj interface{}) error {
+// Default returns the appropriate Binding instance based on the HTTP method
+// and the content type.
+func DefaultWith(method, contentType string) Binding {
+	if method == "GET" {
+		return Form
+	}
+	return Default(contentType)
+}
+
+func ValidateWith(obj interface{}) error {
 	if Validator == nil {
 		return nil
 	}

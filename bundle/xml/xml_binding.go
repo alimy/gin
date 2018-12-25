@@ -2,11 +2,12 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
-package binding
+package xml
 
 import (
 	"bytes"
 	"encoding/xml"
+	"github.com/alimy/gin/binding"
 	"io"
 	"net/http"
 )
@@ -29,5 +30,5 @@ func decodeXML(r io.Reader, obj interface{}) error {
 	if err := decoder.Decode(obj); err != nil {
 		return err
 	}
-	return validate(obj)
+	return binding.ValidateWith(obj)
 }

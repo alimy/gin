@@ -17,18 +17,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Tests that the response is serialized as JSON
-// and Content-Type is set to application/json
-// and special HTML characters are preserved
-func TestContextRenderPureJSON(t *testing.T) {
-	w := httptest.NewRecorder()
-	c, _ := CreateTestContext(w)
-	c.PureJSON(http.StatusCreated, H{"foo": "bar", "html": "<b>"})
-	assert.Equal(t, http.StatusCreated, w.Code)
-	assert.Equal(t, "{\"foo\":\"bar\",\"html\":\"<b>\"}\n", w.Body.String())
-	assert.Equal(t, "application/json; charset=utf-8", w.Header().Get("Content-Type"))
-}
-
 func TestContextHTTPContext(t *testing.T) {
 	c, _ := CreateTestContext(httptest.NewRecorder())
 	req, _ := http.NewRequest("POST", "/", bytes.NewBufferString("{\"foo\":\"bar\", \"bar\":\"foo\"}"))

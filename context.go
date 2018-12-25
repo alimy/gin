@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-contrib/sse"
 	"github.com/alimy/gin/binding"
 	"github.com/alimy/gin/render"
+	"github.com/gin-contrib/sse"
 )
 
 // Content-Type MIME of the most common data formats.
@@ -506,18 +506,18 @@ func (c *Context) SaveUploadedFile(file *multipart.FileHeader, dst string) error
 // It decodes the json payload into the struct specified as a pointer.
 // It writes a 400 error and sets Content-Type header "text/plain" in the response if input is not valid.
 func (c *Context) Bind(obj interface{}) error {
-	b := binding.Default(c.Request.Method, c.ContentType())
+	b := binding.DefaultWith(c.Request.Method, c.ContentType())
 	return c.MustBindWith(obj, b)
 }
 
 // BindJSON is a shortcut for c.MustBindWith(obj, binding.JSON).
 func (c *Context) BindJSON(obj interface{}) error {
-	return c.MustBindWith(obj, binding.JSON)
+	return c.MustBindWith(obj, binding.Default(MIMEJSON))
 }
 
-// BindXML is a shortcut for c.MustBindWith(obj, binding.BindXML).
+// BindXML is a shortcut for c.MustBindWith(obj, binding.Default(MIMEXML)).
 func (c *Context) BindXML(obj interface{}) error {
-	return c.MustBindWith(obj, binding.XML)
+	return c.MustBindWith(obj, binding.Default(MIMEXML))
 }
 
 // BindQuery is a shortcut for c.MustBindWith(obj, binding.Query).
@@ -525,9 +525,9 @@ func (c *Context) BindQuery(obj interface{}) error {
 	return c.MustBindWith(obj, binding.Query)
 }
 
-// BindYAML is a shortcut for c.MustBindWith(obj, binding.YAML).
+// BindYAML is a shortcut for c.MustBindWith(obj, binding.Default(MIMEYAML)).
 func (c *Context) BindYAML(obj interface{}) error {
-	return c.MustBindWith(obj, binding.YAML)
+	return c.MustBindWith(obj, binding.Default(MIMEYAML))
 }
 
 // BindUri binds the passed struct pointer using binding.Uri.
@@ -560,18 +560,18 @@ func (c *Context) MustBindWith(obj interface{}, b binding.Binding) error {
 // It decodes the json payload into the struct specified as a pointer.
 // Like c.Bind() but this method does not set the response status code to 400 and abort if the json is not valid.
 func (c *Context) ShouldBind(obj interface{}) error {
-	b := binding.Default(c.Request.Method, c.ContentType())
+	b := binding.DefaultWith(c.Request.Method, c.ContentType())
 	return c.ShouldBindWith(obj, b)
 }
 
 // ShouldBindJSON is a shortcut for c.ShouldBindWith(obj, binding.JSON).
 func (c *Context) ShouldBindJSON(obj interface{}) error {
-	return c.ShouldBindWith(obj, binding.JSON)
+	return c.ShouldBindWith(obj, binding.Default(MIMEJSON))
 }
 
 // ShouldBindXML is a shortcut for c.ShouldBindWith(obj, binding.XML).
 func (c *Context) ShouldBindXML(obj interface{}) error {
-	return c.ShouldBindWith(obj, binding.XML)
+	return c.ShouldBindWith(obj, binding.Default(MIMEXML))
 }
 
 // ShouldBindQuery is a shortcut for c.ShouldBindWith(obj, binding.Query).
@@ -581,7 +581,7 @@ func (c *Context) ShouldBindQuery(obj interface{}) error {
 
 // ShouldBindYAML is a shortcut for c.ShouldBindWith(obj, binding.YAML).
 func (c *Context) ShouldBindYAML(obj interface{}) error {
-	return c.ShouldBindWith(obj, binding.YAML)
+	return c.ShouldBindWith(obj, binding.Default(MIMEYAML))
 }
 
 // ShouldBindUri binds the passed struct pointer using the specified binding engine.
@@ -770,54 +770,62 @@ func (c *Context) HTML(code int, name string, obj interface{}) {
 // WARNING: we recommend to use this only for development purposes since printing pretty JSON is
 // more CPU and bandwidth consuming. Use Context.JSON() instead.
 func (c *Context) IndentedJSON(code int, obj interface{}) {
-	c.Render(code, render.IndentedJSON{Data: obj})
+	factory := render.Default(render.IntendedJSONRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // SecureJSON serializes the given struct as Secure JSON into the response body.
 // Default prepends "while(1)," to response body if the given struct is array values.
 // It also sets the Content-Type as "application/json".
 func (c *Context) SecureJSON(code int, obj interface{}) {
-	c.Render(code, render.SecureJSON{Prefix: c.engine.secureJsonPrefix, Data: obj})
+	factory := render.Default(render.SecureJSONRenderFactory)
+	c.Render(code, factory.Instance(obj, c.engine.secureJsonPrefix))
 }
 
 // JSONP serializes the given struct as JSON into the response body.
 // It add padding to response body to request data from a server residing in a different domain than the client.
 // It also sets the Content-Type as "application/javascript".
 func (c *Context) JSONP(code int, obj interface{}) {
+	factory := render.Default(render.JsonpJSONRenderFactory)
 	callback := c.DefaultQuery("callback", "")
 	if callback == "" {
-		c.Render(code, render.JSON{Data: obj})
+		c.JSON(code, obj)
 		return
 	}
-	c.Render(code, render.JsonpJSON{Callback: callback, Data: obj})
+	c.Render(code, factory.Instance(obj, callback))
 }
 
 // JSON serializes the given struct as JSON into the response body.
 // It also sets the Content-Type as "application/json".
 func (c *Context) JSON(code int, obj interface{}) {
-	c.Render(code, render.JSON{Data: obj})
+	factory := render.Default(render.JSONRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
 // It also sets the Content-Type as "application/json".
 func (c *Context) AsciiJSON(code int, obj interface{}) {
-	c.Render(code, render.AsciiJSON{Data: obj})
+	factory := render.Default(render.AsciiJSONRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // XML serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj interface{}) {
-	c.Render(code, render.XML{Data: obj})
+	factory := render.Default(render.XMLRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // YAML serializes the given struct as YAML into the response body.
 func (c *Context) YAML(code int, obj interface{}) {
-	c.Render(code, render.YAML{Data: obj})
+	factory := render.Default(render.YAMLRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // ProtoBuf serializes the given struct as ProtoBuf into the response body.
 func (c *Context) ProtoBuf(code int, obj interface{}) {
-	c.Render(code, render.ProtoBuf{Data: obj})
+	factory := render.Default(render.ProtoBufRenderFactory)
+	c.Render(code, factory.Instance(obj))
 }
 
 // String writes the given string into the response body.
