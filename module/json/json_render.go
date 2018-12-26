@@ -72,12 +72,23 @@ func (r *JSONRender) Render(w http.ResponseWriter) (err error) {
 }
 
 // WriteContentType (JSON) writes JSON ContentType.
-func (*JSONRender) WriteContentType(w http.ResponseWriter) {
+func (r *JSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonContentType)
 }
 
-func (JSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &JSONRender{Data: data}
+// Setup set data and opts
+func (r *JSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *JSONRender) Reset() {
+	r.Data = nil
+}
+
+// Instance a new Render instance
+func (JSONRenderFactory) Instance() render.RenderRecycler {
+	return &JSONRender{}
 }
 
 // WriteJSON marshals the given interface object and writes it with custom ContentType.
@@ -107,8 +118,19 @@ func (*IndentedJSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonContentType)
 }
 
-func (IndentedJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &IndentedJSONRender{Data: data}
+// Setup set data and opts
+func (r *IndentedJSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *IndentedJSONRender) Reset() {
+	r.Data = nil
+}
+
+// Instance a new Render instance
+func (IndentedJSONRenderFactory) Instance() render.RenderRecycler {
+	return &IndentedJSONRender{}
 }
 
 // Render (SecureJSON) marshals the given interface object and writes it with custom ContentType.
@@ -126,17 +148,28 @@ func (r *SecureJSONRender) Render(w http.ResponseWriter) error {
 	return nil
 }
 
+// Setup set data and opts
+func (r *SecureJSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+	if len(opts) == 1 {
+		r.Prefix, _ = opts[0].(string)
+	}
+}
+
+// Reset clean data and opts
+func (r *SecureJSONRender) Reset() {
+	r.Data = nil
+	r.Prefix = ""
+}
+
 // WriteContentType (SecureJSON) writes JSON ContentType.
 func (*SecureJSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonContentType)
 }
 
-func (SecureJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	render := &SecureJSONRender{Data: data}
-	if len(opts) == 1 {
-		render.Prefix, _ = opts[0].(string)
-	}
-	return render
+// Instance a new Render instance
+func (SecureJSONRenderFactory) Instance() render.RenderRecycler {
+	return &SecureJSONRender{}
 }
 
 // Render (JsonpJSON) marshals the given interface object and writes it and its callback with custom ContentType.
@@ -161,21 +194,32 @@ func (r *JsonpJSONRender) Render(w http.ResponseWriter) (err error) {
 	return nil
 }
 
+// Setup set data and opts
+func (r *JsonpJSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+	if len(opts) == 1 {
+		if callback, ok := opts[0].(string); ok {
+			r.Callback = callback
+		} else {
+			r.Callback = ""
+		}
+	}
+}
+
+// Reset clean data and opts
+func (r *JsonpJSONRender) Reset() {
+	r.Data = nil
+	r.Callback = ""
+}
+
 // WriteContentType (JsonpJSON) writes Javascript ContentType.
 func (*JsonpJSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonpContentType)
 }
 
-func (JsonpJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	render := &JsonpJSONRender{Data: data}
-	if len(opts) == 1 {
-		if callback, ok := opts[0].(string); ok {
-			render.Callback = callback
-		} else {
-			render.Callback = ""
-		}
-	}
-	return render
+// Instance a new Render instance
+func (JsonpJSONRenderFactory) Instance() render.RenderRecycler {
+	return &JsonpJSONRender{}
 }
 
 // Render (AsciiJSON) marshals the given interface object and writes it with custom ContentType.
@@ -199,11 +243,22 @@ func (r *AsciiJSONRender) Render(w http.ResponseWriter) (err error) {
 	return nil
 }
 
+// Setup set data and opts
+func (r *AsciiJSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *AsciiJSONRender) Reset() {
+	r.Data = nil
+}
+
 // WriteContentType (AsciiJSON) writes JSON ContentType.
 func (*AsciiJSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonAsciiContentType)
 }
 
-func (AsciiJSONRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &AsciiJSONRender{Data: data}
+// Instance a new Render instance
+func (AsciiJSONRenderFactory) Instance() render.RenderRecycler {
+	return &AsciiJSONRender{}
 }

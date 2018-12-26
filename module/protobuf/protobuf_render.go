@@ -33,11 +33,22 @@ func (r *ProtoBufRender) Render(w http.ResponseWriter) error {
 	return nil
 }
 
+// Setup set data and opts
+func (r *ProtoBufRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *ProtoBufRender) Reset() {
+	r.Data = nil
+}
+
 // WriteContentType (ProtoBuf) writes ProtoBuf ContentType.
 func (*ProtoBufRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, protobufContentType)
 }
 
-func (ProtoBufRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &ProtoBufRender{Data: data}
+// Instance a new Render instance
+func (ProtoBufRenderFactory) Instance() render.RenderRecycler {
+	return &ProtoBufRender{}
 }

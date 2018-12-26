@@ -7,5 +7,5 @@ import (
 
 func init() {
 	binding.Register(binding.MIMEMSGPACK, &msgpackBinding{})
-	render.Register(render.MsgPackRenderFactory, &MsgPackRenderFactory{})
+	render.Register(render.MsgPackRenderType, MsgPackRenderFactory{})
 }

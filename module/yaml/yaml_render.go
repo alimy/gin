@@ -33,11 +33,22 @@ func (r *YAMLRender) Render(w http.ResponseWriter) error {
 	return nil
 }
 
+// Setup set data and opts
+func (r *YAMLRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *YAMLRender) Reset() {
+	r.Data = nil
+}
+
 // WriteContentType (YAML) writes YAML ContentType for response.
 func (*YAMLRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, yamlContentType)
 }
 
-func (YAMLRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &YAMLRender{Data: data}
+// Instance a new Render instance
+func (YAMLRenderFactory) Instance() render.RenderRecycler {
+	return &YAMLRender{}
 }

@@ -8,11 +8,11 @@ import (
 func init() {
 	binding.Register(binding.MIMEJSON, &jsonBinding{})
 
-	render.Register(render.JSONRenderFactory, &JSONRenderFactory{})
-	render.Register(render.IntendedJSONRenderFactory, &IndentedJSONRenderFactory{})
-	render.Register(render.JsonpJSONRenderFactory, &JsonpJSONRenderFactory{})
-	render.Register(render.SecureJSONRenderFactory, &SecureJSONRenderFactory{})
-	render.Register(render.AsciiJSONRenderFactory, &AsciiJSONRenderFactory{})
+	render.Register(render.JSONRenderType, JSONRenderFactory{})
+	render.Register(render.IntendedJSONRenderType, IndentedJSONRenderFactory{})
+	render.Register(render.JsonpJSONRenderType, JsonpJSONRenderFactory{})
+	render.Register(render.SecureJSONRenderType, SecureJSONRenderFactory{})
+	render.Register(render.AsciiJSONRenderType, AsciiJSONRenderFactory{})
 }
 
 // EnableDecoderUseNumber is used to call the UseNumber method on the JSON

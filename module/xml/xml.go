@@ -7,5 +7,5 @@ import (
 
 func init() {
 	binding.Register(binding.MIMEXML, &xmlBinding{})
-	render.Register(render.XMLRenderFactory, &XMLRenderFactory{})
+	render.Register(render.XMLRenderType, XMLRenderFactory{})
 }

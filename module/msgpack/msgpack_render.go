@@ -30,6 +30,16 @@ func (r *MsgPackRender) Render(w http.ResponseWriter) error {
 	return WriteMsgPack(w, r.Data)
 }
 
+// Setup set data and opts
+func (r *MsgPackRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *MsgPackRender) Reset() {
+	r.Data = nil
+}
+
 // WriteMsgPack writes MsgPack ContentType and encodes the given interface object.
 func WriteMsgPack(w http.ResponseWriter, obj interface{}) error {
 	render.WriteContentType(w, msgpackContentType)
@@ -37,6 +47,7 @@ func WriteMsgPack(w http.ResponseWriter, obj interface{}) error {
 	return codec.NewEncoder(w, &mh).Encode(obj)
 }
 
-func (MsgPackRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &MsgPackRender{Data: data}
+// Instance a new Render instance
+func (MsgPackRenderFactory) Instance() render.RenderRecycler {
+	return &MsgPackRender{}
 }

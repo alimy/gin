@@ -21,7 +21,7 @@ type PureJSONRender struct {
 type PureJsonRenderFactory struct{}
 
 func init() {
-	render.Register(render.PureJSONRenderFactory, &PureJsonRenderFactory{})
+	render.Register(render.PureJSONRenderType, &PureJsonRenderFactory{})
 }
 
 // Render (PureJSON) writes custom ContentType and encodes the given interface object.
@@ -32,11 +32,22 @@ func (r *PureJSONRender) Render(w http.ResponseWriter) error {
 	return encoder.Encode(r.Data)
 }
 
+// Setup set data and opts
+func (r *PureJSONRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *PureJSONRender) Reset() {
+	r.Data = nil
+}
+
 // WriteContentType (PureJSON) writes custom ContentType.
 func (*PureJSONRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, jsonContentType)
 }
 
-func (PureJsonRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &PureJSONRender{Data: data}
+// Instance a new Render instance
+func (PureJsonRenderFactory) Instance() render.RenderRecycler {
+	return &PureJSONRender{}
 }

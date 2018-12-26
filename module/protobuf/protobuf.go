@@ -7,5 +7,5 @@ import (
 
 func init() {
 	binding.Register(binding.MIMEPROTOBUF, &protobufBinding{})
-	render.Register(render.ProtoBufRenderFactory, &ProtoBufRenderFactory{})
+	render.Register(render.ProtoBufRenderType, ProtoBufRenderFactory{})
 }

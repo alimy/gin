@@ -7,5 +7,5 @@ import (
 
 func init() {
 	binding.Register(binding.MIMEYAML, &yamlBinding{})
-	render.Register(render.YAMLRenderFactory, &YAMLRenderFactory{})
+	render.Register(render.YAMLRenderType, YAMLRenderFactory{})
 }

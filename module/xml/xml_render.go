@@ -25,11 +25,22 @@ func (r *XMLRender) Render(w http.ResponseWriter) error {
 	return xml.NewEncoder(w).Encode(r.Data)
 }
 
+// Setup set data and opts
+func (r *XMLRender) Setup(data interface{}, opts ...interface{}) {
+	r.Data = data
+}
+
+// Reset clean data and opts
+func (r *XMLRender) Reset() {
+	r.Data = nil
+}
+
 // WriteContentType (XML) writes XML ContentType for response.
 func (*XMLRender) WriteContentType(w http.ResponseWriter) {
 	render.WriteContentType(w, xmlContentType)
 }
 
-func (XMLRenderFactory) Instance(data interface{}, opts ...interface{}) render.Render {
-	return &XMLRender{Data: data}
+// Instance a new Render instance
+func (XMLRenderFactory) Instance() render.RenderRecycler {
+	return &XMLRender{}
 }
