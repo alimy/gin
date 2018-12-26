@@ -760,7 +760,7 @@ func (c *Context) Render(code int, r render.Render) {
 // Render writes the response headers and calls render.Render to render data and opts
 func (c *Context) renderWith(name int, code int, data interface{}, opts ...interface{}) {
 	r := render.Default(name)
-	r.Setup(data, opts)
+	r.Setup(data, opts...)
 	c.Render(code, r)
 	render.Recycle(name, r)
 }
