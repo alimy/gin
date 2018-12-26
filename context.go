@@ -757,6 +757,14 @@ func (c *Context) Render(code int, r render.Render) {
 	}
 }
 
+// Render writes the response headers and calls render.Render to render data and opts
+func (c *Context) renderWith(name int, code int, data interface{}, opts ...interface{}) {
+	r := render.Default(name)
+	r.Setup(data, opts)
+	c.Render(code, r)
+	render.Recycle(name, r)
+}
+
 // HTML renders the HTTP template specified by its file name.
 // It also updates the HTTP code and sets the Content-Type as "text/html".
 // See http://golang.org/doc/articles/wiki/
@@ -770,62 +778,59 @@ func (c *Context) HTML(code int, name string, obj interface{}) {
 // WARNING: we recommend to use this only for development purposes since printing pretty JSON is
 // more CPU and bandwidth consuming. Use Context.JSON() instead.
 func (c *Context) IndentedJSON(code int, obj interface{}) {
-	factory := render.Default(render.IntendedJSONRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.IntendedJSONRenderType, code, obj)
 }
 
 // SecureJSON serializes the given struct as Secure JSON into the response body.
 // Default prepends "while(1)," to response body if the given struct is array values.
 // It also sets the Content-Type as "application/json".
 func (c *Context) SecureJSON(code int, obj interface{}) {
-	factory := render.Default(render.SecureJSONRenderFactory)
-	c.Render(code, factory.Instance(obj, c.engine.secureJsonPrefix))
+	c.renderWith(render.SecureJSONRenderType, code, obj)
 }
 
 // JSONP serializes the given struct as JSON into the response body.
 // It add padding to response body to request data from a server residing in a different domain than the client.
 // It also sets the Content-Type as "application/javascript".
 func (c *Context) JSONP(code int, obj interface{}) {
-	factory := render.Default(render.JsonpJSONRenderFactory)
 	callback := c.DefaultQuery("callback", "")
 	if callback == "" {
-		c.JSON(code, obj)
+		c.renderWith(render.JSONRenderType, code, obj)
 		return
 	}
-	c.Render(code, factory.Instance(obj, callback))
+	c.renderWith(render.JsonpJSONRenderType, code, obj)
 }
 
 // JSON serializes the given struct as JSON into the response body.
 // It also sets the Content-Type as "application/json".
 func (c *Context) JSON(code int, obj interface{}) {
-	factory := render.Default(render.JSONRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.JSONRenderType, code, obj)
 }
 
 // AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
 // It also sets the Content-Type as "application/json".
 func (c *Context) AsciiJSON(code int, obj interface{}) {
-	factory := render.Default(render.AsciiJSONRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.AsciiJSONRenderType, code, obj)
 }
 
 // XML serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj interface{}) {
-	factory := render.Default(render.XMLRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.XMLRenderType, code, obj)
 }
 
 // YAML serializes the given struct as YAML into the response body.
 func (c *Context) YAML(code int, obj interface{}) {
-	factory := render.Default(render.YAMLRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.YAMLRenderType, code, obj)
 }
 
 // ProtoBuf serializes the given struct as ProtoBuf into the response body.
 func (c *Context) ProtoBuf(code int, obj interface{}) {
-	factory := render.Default(render.ProtoBufRenderFactory)
-	c.Render(code, factory.Instance(obj))
+	c.renderWith(render.ProtoBufRenderType, code, obj)
+}
+
+// MsgPack serializes the given struct as ProtoBuf into the response body.
+func (c *Context) MsgPack(code int, obj interface{}) {
+	c.renderWith(render.MsgPackRenderType, code, obj)
 }
 
 // String writes the given string into the response body.

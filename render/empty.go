@@ -1,22 +1,39 @@
 package render
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type EmptyRenderFactory struct{}
 
 type EmptyRender struct{}
 
+func init() {
+	Register(EmptyRenderType, EmptyRenderFactory{})
+}
+
 // Instance apply opts to build a new EmptyRender instance
-func (EmptyRenderFactory) Instance(data interface{}, opts ...interface{}) Render {
+func (EmptyRenderFactory) Instance() Render {
 	return &EmptyRender{}
 }
 
 // Render writes data with custom ContentType.
 func (*EmptyRender) Render(http.ResponseWriter) error {
-	return nil
+	return fmt.Errorf("empty render do nothing")
 }
 
 // WriteContentType writes custom ContentType.
 func (*EmptyRender) WriteContentType(w http.ResponseWriter) {
-	return
+	// Empty
+}
+
+// Setup set data and opts
+func (*EmptyRender) Setup(data interface{}, opts ...interface{}) {
+	// Empty
+}
+
+// Reset clean data and opts
+func (*EmptyRender) Reset() {
+	// Empty
 }

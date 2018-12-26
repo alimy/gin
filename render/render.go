@@ -9,30 +9,30 @@ import (
 	"sync"
 )
 
-// RenderFactory Names
+// RenderType Names
 const (
-	JSONRenderFactory           = iota // JSON Render Factory
-	IntendedJSONRenderFactory          // IntendedJSON Render Factory
-	PureJSONRenderFactory              // PureJSON Render Factory
-	AsciiJSONRenderFactory             // AsciiJSON Render Factory
-	JsonpJSONRenderFactory             // JsonpJSON Render Factory
-	SecureJSONRenderFactory            // SecureJSON RenderFactory
-	XMLRenderFactory                   // XML Render Factory
-	StringRenderFactory                // String Render Factory
-	RedirectRenderFactory              // Redirect Render Factory
-	DataRenderFactory                  // Data Render Factory
-	HTMLRenderFactory                  // HTML Render Factory
-	HTMLDebugRenderFactory             // HTMLDebug Render Factory
-	HTMLProductionRenderFactory        // HTMLProduction Render Factory
-	YAMLRenderFactory                  // YAML Render Factory
-	MsgPackRenderFactory               // MsgPack Render Factory
-	ReaderRenderFactory                // Reader Render Factory
-	ProtoBufRenderFactory              // ProtoBuf Render Factory
+	JSONRenderType           = iota // JSON Render Type
+	IntendedJSONRenderType          // IntendedJSON Render Type
+	PureJSONRenderType              // PureJSON Render Type
+	AsciiJSONRenderType             // AsciiJSON Render Type
+	JsonpJSONRenderType             // JsonpJSON Render Type
+	SecureJSONRenderType            // SecureJSON Type
+	XMLRenderType                   // XML Render Type
+	StringRenderType                // String Render Type
+	RedirectRenderType              // Redirect Render Type
+	DataRenderType                  // Data Render Type
+	HTMLRenderType                  // HTML Render Type
+	HTMLDebugRenderType             // HTMLDebug Render Type
+	HTMLProductionRenderType        // HTMLProduction Render Type
+	YAMLRenderType                  // YAML Render Type
+	MsgPackRenderType               // MsgPack Render Type
+	ReaderRenderType                // Reader Render Type
+	ProtoBufRenderType              // ProtoBuf Render Type
+	EmptyRenderType                 // Empty Render Type
 )
 
 var (
-	renderFactoriesMu sync.RWMutex
-	renderFactories   = make(map[int]RenderFactory)
+	renderPool = &RenderPool{renderPools: make(map[int]sync.Pool)}
 )
 
 // Render interface is to be implemented by JSON, XML, HTML, YAML and so on.
@@ -43,39 +43,86 @@ type Render interface {
 	WriteContentType(w http.ResponseWriter)
 }
 
+type RenderRecycler interface {
+	Render
+	// Setup set data and opts
+	Setup(data interface{}, opts ...interface{})
+	// Reset clean data and opts
+	Reset()
+}
+
 // HTMLRender interface is to be implemented by HTMLProduction and HTMLDebug.
 type RenderFactory interface {
 	// Instance apply opts to build a new Render instance
-	Instance(data interface{}, opts ...interface{}) Render
+	Instance() Render
+}
+
+// RenderPool contains Render instance
+type RenderPool struct {
+	mu          sync.RWMutex
+	renderPools map[int]sync.Pool
+}
+
+func (p *RenderPool) get(name int) RenderRecycler {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	var render RenderRecycler
+	if pool, ok := p.renderPools[name]; ok {
+		render, _ = pool.Get().(RenderRecycler)
+	} else {
+		pool, _ = p.renderPools[EmptyRenderType]
+		render, _ = pool.Get().(RenderRecycler)
+	}
+	if render == nil {
+		render = &EmptyRender{}
+	}
+	return render
+}
+
+func (p *RenderPool) put(name int, render RenderRecycler) {
+	p.mu.RLock()
+	defer p.mu.RUnlock()
+
+	if pool, ok := p.renderPools[name]; ok {
+		render.Reset()
+		pool.Put(render)
+	}
+}
+
+func (p *RenderPool) register(name int, factory RenderFactory) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if factory == nil {
+		panic("gin: Register RenderFactory is nil")
+	}
+	if _, dup := p.renderPools[name]; dup {
+		panic("gin: Register called twice for RenderFactory")
+	}
+
+	p.renderPools[name] = sync.Pool{
+		New: func() interface{} {
+			return factory.Instance()
+		},
+	}
 }
 
 // Register makes a binding available by the provided name.
 // If Register is called twice with the same name or if binding is nil,
 // it panics.
 func Register(name int, factory RenderFactory) {
-	renderFactoriesMu.Lock()
-	defer renderFactoriesMu.Unlock()
-
-	if factory == nil {
-		panic("gin: Register RenderFactory is nil")
-	}
-	if _, dup := renderFactories[name]; dup {
-		panic("gin: Register called twice for RenderFactories")
-	}
-
-	renderFactories[name] = factory
+	renderPool.register(name, factory)
 }
 
-// Default returns the appropriate RenderFactory instance based on the render type.
-func Default(name int) RenderFactory {
-	renderFactoriesMu.RLock()
-	defer renderFactoriesMu.RUnlock()
+// Default returns the appropriate Render instance based on the render type.
+func Default(name int) RenderRecycler {
+	return renderPool.get(name)
+}
 
-	if renderFactory, ok := renderFactories[name]; ok {
-		return renderFactory
-	} else {
-		return EmptyRenderFactory{}
-	}
+// Recycle put render to sync.Pool
+func Recycle(name int, render RenderRecycler) {
+	renderPool.put(name, render)
 }
 
 func WriteContentType(w http.ResponseWriter, value []string) {
