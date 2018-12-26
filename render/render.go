@@ -51,10 +51,10 @@ type RenderRecycler interface {
 	Reset()
 }
 
-// HTMLRender interface is to be implemented by HTMLProduction and HTMLDebug.
+// RenderFactory interface is to be implemented by other Render.
 type RenderFactory interface {
-	// Instance apply opts to build a new Render instance
-	Instance() Render
+	// Instance a new RenderRecycler instance
+	Instance() RenderRecycler
 }
 
 // RenderPool contains Render instance
