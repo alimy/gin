@@ -14,7 +14,7 @@ func init() {
 }
 
 // Instance apply opts to build a new EmptyRender instance
-func (EmptyRenderFactory) Instance() Render {
+func (EmptyRenderFactory) Instance() RenderRecycler {
 	return &EmptyRender{}
 }
 
