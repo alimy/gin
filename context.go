@@ -785,7 +785,7 @@ func (c *Context) IndentedJSON(code int, obj interface{}) {
 // Default prepends "while(1)," to response body if the given struct is array values.
 // It also sets the Content-Type as "application/json".
 func (c *Context) SecureJSON(code int, obj interface{}) {
-	c.renderWith(render.SecureJSONRenderType, code, obj)
+	c.renderWith(render.SecureJSONRenderType, code, obj, c.engine.secureJsonPrefix)
 }
 
 // JSONP serializes the given struct as JSON into the response body.
@@ -797,7 +797,7 @@ func (c *Context) JSONP(code int, obj interface{}) {
 		c.renderWith(render.JSONRenderType, code, obj)
 		return
 	}
-	c.renderWith(render.JsonpJSONRenderType, code, obj)
+	c.renderWith(render.JsonpJSONRenderType, code, obj, callback)
 }
 
 // JSON serializes the given struct as JSON into the response body.
