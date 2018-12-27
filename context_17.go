@@ -15,7 +15,7 @@ import (
 // PureJSON serializes the given struct as JSON into the response body.
 // PureJSON, unlike JSON, does not replace special html characters with their unicode entities.
 func (c *Context) PureJSON(code int, obj interface{}) {
-	c.renderWith(render.PureJSONRenderType, code, obj)
+	c.RenderWith(render.PureJSONRenderType, code, obj)
 }
 
 /************************************/
