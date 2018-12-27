@@ -757,8 +757,8 @@ func (c *Context) Render(code int, r render.Render) {
 	}
 }
 
-// Render writes the response headers and calls render.Render to render data and opts
-func (c *Context) renderWith(name int, code int, data interface{}, opts ...interface{}) {
+// RenderWith writes the response headers and calls render.Render to render data and opts
+func (c *Context) RenderWith(name int, code int, data interface{}, opts ...interface{}) {
 	r := render.Default(name)
 	r.Setup(data, opts...)
 	c.Render(code, r)
@@ -778,14 +778,14 @@ func (c *Context) HTML(code int, name string, obj interface{}) {
 // WARNING: we recommend to use this only for development purposes since printing pretty JSON is
 // more CPU and bandwidth consuming. Use Context.JSON() instead.
 func (c *Context) IndentedJSON(code int, obj interface{}) {
-	c.renderWith(render.IntendedJSONRenderType, code, obj)
+	c.RenderWith(render.IntendedJSONRenderType, code, obj)
 }
 
 // SecureJSON serializes the given struct as Secure JSON into the response body.
 // Default prepends "while(1)," to response body if the given struct is array values.
 // It also sets the Content-Type as "application/json".
 func (c *Context) SecureJSON(code int, obj interface{}) {
-	c.renderWith(render.SecureJSONRenderType, code, obj, c.engine.secureJsonPrefix)
+	c.RenderWith(render.SecureJSONRenderType, code, obj, c.engine.secureJsonPrefix)
 }
 
 // JSONP serializes the given struct as JSON into the response body.
@@ -794,43 +794,43 @@ func (c *Context) SecureJSON(code int, obj interface{}) {
 func (c *Context) JSONP(code int, obj interface{}) {
 	callback := c.DefaultQuery("callback", "")
 	if callback == "" {
-		c.renderWith(render.JSONRenderType, code, obj)
+		c.RenderWith(render.JSONRenderType, code, obj)
 		return
 	}
-	c.renderWith(render.JsonpJSONRenderType, code, obj, callback)
+	c.RenderWith(render.JsonpJSONRenderType, code, obj, callback)
 }
 
 // JSON serializes the given struct as JSON into the response body.
 // It also sets the Content-Type as "application/json".
 func (c *Context) JSON(code int, obj interface{}) {
-	c.renderWith(render.JSONRenderType, code, obj)
+	c.RenderWith(render.JSONRenderType, code, obj)
 }
 
 // AsciiJSON serializes the given struct as JSON into the response body with unicode to ASCII string.
 // It also sets the Content-Type as "application/json".
 func (c *Context) AsciiJSON(code int, obj interface{}) {
-	c.renderWith(render.AsciiJSONRenderType, code, obj)
+	c.RenderWith(render.AsciiJSONRenderType, code, obj)
 }
 
 // XML serializes the given struct as XML into the response body.
 // It also sets the Content-Type as "application/xml".
 func (c *Context) XML(code int, obj interface{}) {
-	c.renderWith(render.XMLRenderType, code, obj)
+	c.RenderWith(render.XMLRenderType, code, obj)
 }
 
 // YAML serializes the given struct as YAML into the response body.
 func (c *Context) YAML(code int, obj interface{}) {
-	c.renderWith(render.YAMLRenderType, code, obj)
+	c.RenderWith(render.YAMLRenderType, code, obj)
 }
 
 // ProtoBuf serializes the given struct as ProtoBuf into the response body.
 func (c *Context) ProtoBuf(code int, obj interface{}) {
-	c.renderWith(render.ProtoBufRenderType, code, obj)
+	c.RenderWith(render.ProtoBufRenderType, code, obj)
 }
 
 // MsgPack serializes the given struct as ProtoBuf into the response body.
 func (c *Context) MsgPack(code int, obj interface{}) {
-	c.renderWith(render.MsgPackRenderType, code, obj)
+	c.RenderWith(render.MsgPackRenderType, code, obj)
 }
 
 // String writes the given string into the response body.
